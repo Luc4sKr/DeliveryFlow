@@ -1,0 +1,51 @@
+@startuml DeliveryFlow
+top to bottom direction
+
+skinparam componentStyle rectangle
+skinparam shadowing false
+skinparam linetype ortho
+skinparam nodesep 80
+skinparam ranksep 90
+
+component "Delivery Service" as Delivery
+
+queue "RabbitMQ" as Rabbit1
+
+component "Validation Service" as Validation
+component "Geocoding Service" as Geocoding
+component "Priority Service" as Priority
+
+queue "RabbitMQ" as Rabbit2
+
+component "Regionalization Service" as Regionalization
+
+queue "RabbitMQ" as Rabbit3
+
+component "Routing Service" as Routing
+component "Warehouse Service" as Warehouse
+
+
+Delivery --> Rabbit1 : DeliveryCreated
+
+Rabbit1 --> Validation
+Rabbit1 --> Geocoding
+Rabbit1 --> Priority
+
+Validation --> Rabbit2 : ValidationCompleted
+Geocoding --> Rabbit2 : GeocodingCompleted
+Priority --> Rabbit2 : PriorityCompleted
+
+Rabbit2 --> Regionalization : DeliveryPrepared
+
+Regionalization --> Rabbit3 : RegionAssigned
+
+Rabbit3 --> Routing
+Rabbit3 --> Warehouse
+
+
+Validation -[hidden]right- Geocoding
+Geocoding -[hidden]right- Priority
+
+Routing -[hidden]right- Warehouse
+
+@enduml
