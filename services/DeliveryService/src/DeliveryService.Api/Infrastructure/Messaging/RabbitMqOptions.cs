@@ -2,9 +2,6 @@ namespace DeliveryService.Api.Infrastructure.Messaging;
 
 public class RabbitMqOptions
 {
-    public string HostName { get; set; } = "localhost";
-    public int Port { get; set; } = 5672;
-    public string UserName { get; set; } = "guest";
-    public string Password { get; set; } = "guest";
-    public string DeliveryCreatedQueue { get; set; } = "delivery-created";
+    public string ConnectionString { get; set; } = string.Empty;
+    public string DeliveryCreatedExchange { get; set; } = "delivery.created";
 }

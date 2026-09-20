@@ -11,30 +11,26 @@ public class RabbitMqEventPublisher(
     IOptions<RabbitMqOptions> options,
     ILogger<RabbitMqEventPublisher> logger) : IEventPublisher
 {
-    public Task PublishAsync<T>(string topic, T message, CancellationToken cancellationToken = default)
+    public Task PublishAsync<T>(string exchange, T message, CancellationToken cancellationToken = default)
     {
         cancellationToken.ThrowIfCancellationRequested();
         try
         {
-            var settings = options.Value;
             var factory = new ConnectionFactory
             {
-                HostName = settings.HostName,
-                Port = settings.Port,
-                UserName = settings.UserName,
-                Password = settings.Password
+                Uri = new Uri(options.Value.ConnectionString)
             };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
-            channel.QueueDeclare(topic, durable: true, exclusive: false, autoDelete: false);
+            channel.ExchangeDeclare(exchange, ExchangeType.Fanout, durable: true, autoDelete: false);
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;
-            channel.BasicPublish(string.Empty, topic, properties, body);
+            channel.BasicPublish(exchange, string.Empty, properties, body);
         }
         catch (Exception exception) when (exception is BrokerUnreachableException or ConnectFailureException)
         {
-            logger.LogWarning(exception, "RabbitMQ indisponivel. O evento nao foi publicado em {Topic}.", topic);
+            logger.LogWarning(exception, "RabbitMQ indisponivel. O evento nao foi publicado em {Exchange}.", exchange);
         }
         return Task.CompletedTask;
     }

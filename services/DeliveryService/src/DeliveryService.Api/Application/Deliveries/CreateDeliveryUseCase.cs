@@ -6,7 +6,7 @@ namespace DeliveryService.Api.Application.Deliveries;
 public class CreateDeliveryUseCase(
     IDeliveryRepository repository,
     IEventPublisher eventPublisher,
-    string deliveryCreatedTopic)
+    string deliveryCreatedExchange)
 {
     public async Task<Delivery> ExecuteAsync(
         CreateDeliveryCommand command,
@@ -24,7 +24,7 @@ public class CreateDeliveryUseCase(
         var delivery = Delivery.Create(address, command.Weight, command.Volume, DateTime.UtcNow);
 
         repository.Add(delivery);
-        await eventPublisher.PublishAsync(deliveryCreatedTopic, delivery, cancellationToken);
+        await eventPublisher.PublishAsync(deliveryCreatedExchange, delivery, cancellationToken);
 
         return delivery;
     }
