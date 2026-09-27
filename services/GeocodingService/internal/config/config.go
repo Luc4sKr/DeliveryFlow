@@ -9,38 +9,31 @@ type Config struct {
 	RabbitMqConnectionString string
 	QueueName                string
 	DeliveryCreationExchange string
-	DeliveryPreparationQueue string
+	DeliveryRegionalizationQueue string
 }
 
 func Load() (*Config, error) {
-	var err error
-
 	connectionString, exists := os.LookupEnv("RABBIT_MQ_URL")
 	if !exists {
-		err = errors.Join(err, errors.New("env not found: RABBIT_MQ_URL"))
-	}
-	queueName, exists := os.LookupEnv("GEOCODING_QUEUE")
-	if !exists {
-		err = errors.Join(err, errors.New("env not found: GEOCODING_QUEUE"))
-	}
-	deliveryCreationExchange, exists := os.LookupEnv("DELIVERY_CREATION_EXCHANGE")
-	if !exists {
-		err = errors.Join(err, errors.New("env not found: DELIVERY_CREATION_EXCHANGE"))
+		return nil, errors.New("env not found: RABBIT_MQ_URL")
 	}
 
-	deliveryPreparationQueue, exists := os.LookupEnv("DELIVERY_PREPARATION_QUEUE")
-	if !exists {
-		err = errors.Join(err, errors.New("env not found: DELIVERY_PREPARATION_QUEUE"))
-	}
-
-	if err != nil {
-		return nil, err
-	}
+	queueName := getEnvOrDefault("GEOCODING_QUEUE", "geocoding")
+	deliveryCreationExchange := getEnvOrDefault("DELIVERY_CREATION_EXCHANGE", "delivery.created")
+	deliveryRegionalizationQueue := getEnvOrDefault("DELIVERY_REGIONALIZATION_QUEUE", "regionalization")
 
 	return &Config{
 		RabbitMqConnectionString: connectionString,
 		QueueName:                queueName,
 		DeliveryCreationExchange: deliveryCreationExchange,
-		DeliveryPreparationQueue: deliveryPreparationQueue,
+		DeliveryRegionalizationQueue: deliveryRegionalizationQueue,
 	}, nil
+}
+
+func getEnvOrDefault(key string, defaultValue string) string {
+	value, exists := os.LookupEnv(key)
+	if exists {
+		return value
+	}
+	return defaultValue
 }

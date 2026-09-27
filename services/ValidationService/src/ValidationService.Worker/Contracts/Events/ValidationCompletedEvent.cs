@@ -1,7 +1,9 @@
 namespace ValidationService.Worker.Contracts.Events;
 
 public record ValidationCompletedEvent(
-    Guid DeliveryId,
-    bool IsValid,
-    IReadOnlyCollection<string> Errors,
-    DateTime ValidatedAt);
+    Guid Id,
+    string Status,
+    string Service,
+    AddressEvent Destination,
+    decimal Weight,
+    decimal Volume);

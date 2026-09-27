@@ -20,12 +20,12 @@ public class RabbitMqEventPublisher(
             var factory = new ConnectionFactory { Uri = new Uri(options.Value.ConnectionString) };
             using var connection = factory.CreateConnection();
             using var channel = connection.CreateModel();
-            channel.ExchangeDeclare(options.Value.ValidationCompletedExchange, ExchangeType.Fanout, durable: true, autoDelete: false);
+            channel.QueueDeclare(options.Value.RegionalizationQueue, durable: true, exclusive: false, autoDelete: false);
 
             var body = Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message));
             var properties = channel.CreateBasicProperties();
             properties.Persistent = true;
-            channel.BasicPublish(options.Value.ValidationCompletedExchange, string.Empty, properties, body);
+            channel.BasicPublish(string.Empty, options.Value.RegionalizationQueue, properties, body);
         }
         catch (Exception exception) when (exception is BrokerUnreachableException or ConnectFailureException)
         {

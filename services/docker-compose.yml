@@ -1,0 +1,46 @@
+
+services:
+  delivery-service:
+    build:
+      context: ./DeliveryService
+      dockerfile: Dockerfile
+    environment:
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+
+
+  validation-service:
+    build:
+      context: ./ValidationService
+      dockerfile: Dockerfile
+    environment:
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+
+  geocoding-service:
+    build:
+      context: ./GeocodingService
+      dockerfile: Dockerfile
+    environment:
+      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      - rabbitmq
+
+  priority-service:
+    build:
+      context: ./PriorityService
+      dockerfile: Dockerfile
+    environment:
+      RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+          - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:4-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"

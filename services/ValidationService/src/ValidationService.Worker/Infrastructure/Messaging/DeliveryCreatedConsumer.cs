@@ -44,13 +44,15 @@ public class DeliveryCreatedConsumer(
                 var errors = validator.Validate(delivery);
                 var result = new ValidationCompletedEvent(
                     delivery.Id,
-                    errors.Count == 0,
-                    errors,
-                    DateTime.UtcNow);
+                    errors.Count == 0 ? "SUCCESS" : "FAILED",
+                    "ValidationService",
+                    delivery.Destination,
+                    delivery.Weight,
+                    delivery.Volume);
 
                 publisher.PublishAsync(result, stoppingToken).GetAwaiter().GetResult();
                 channel.BasicAck(eventArgs.DeliveryTag, multiple: false);
-                logger.LogInformation("Entrega {DeliveryId} validada: {IsValid}.", delivery.Id, result.IsValid);
+                logger.LogInformation("Entrega {DeliveryId} validada: {Status}.", delivery.Id, result.Status);
             }
             catch (Exception exception)
             {

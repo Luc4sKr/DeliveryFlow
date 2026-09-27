@@ -48,7 +48,7 @@ func (c *Container) Start(ctx context.Context) error {
 		return err
 	}
 
-	_, err = management.DeclareQueue(ctx, &rmq.DefaultQueueSpecification{Name: c.cfg.DeliveryPreparationQueue})
+	_, err = management.DeclareQueue(ctx, &rmq.DefaultQueueSpecification{Name: c.cfg.DeliveryRegionalizationQueue})
 	if err != nil {
 		return err
 	}
@@ -58,7 +58,7 @@ func (c *Container) Start(ctx context.Context) error {
 		return err
 	}
 
-	rabbitmqPublisher, err := connection.NewPublisher(ctx, &rmq.QueueAddress{Queue: c.cfg.DeliveryPreparationQueue}, nil)
+	rabbitmqPublisher, err := connection.NewPublisher(ctx, &rmq.QueueAddress{Queue: c.cfg.DeliveryRegionalizationQueue}, nil)
 
 	consumer := rabbitmq.NewConsumer(rabbitMqConsumer)
 	publisher := rabbitmq.NewPublisher(rabbitmqPublisher)
