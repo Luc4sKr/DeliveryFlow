@@ -9,11 +9,12 @@ type Status string
 
 const (
 	StatusSuccess = "SUCCESS"
-	StatusError   = "ERROR"
+	StatusFailed  = "FAILED"
 )
 
-type GeoLocation struct {
+type DeliveryDTO struct {
 	Id       string
+	Service string
 	Status   Status
 	Location *Location
 }

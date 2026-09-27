@@ -9,6 +9,8 @@ import (
 	"github.com/Luc4sKr/DeliveryFlow/services/GeocodingService/internal/domain"
 )
 
+const service = "GeocodingService"
+
 type GeoCodingHandler struct {
 	publisher ports.EventPublisher
 	geocoder  ports.GeoCoder
@@ -42,8 +44,9 @@ func (h *GeoCodingHandler) Handle(ctx context.Context, message []byte) error {
 		return err
 	}
 
-	payload, _ := json.Marshal(&output.GeoLocation{
+	payload, _ := json.Marshal(&output.DeliveryDTO{
 		Id:     deliveryCreation.Id,
+		Service: service,
 		Status: output.StatusSuccess,
 		Location: &output.Location{
 			Latitude:  geolocation.Latitude,
