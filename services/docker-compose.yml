@@ -9,7 +9,8 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - rabbitmq
+      rabbitmq:
+          condition: service_healthy
 
 
   validation-service:
@@ -19,7 +20,8 @@ services:
     environment:
       RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+          condition: service_healthy
 
   geocoding-service:
     build:
@@ -28,7 +30,8 @@ services:
     environment:
       RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
-      - rabbitmq
+      rabbitmq:
+          condition: service_healthy
 
   priority-service:
     build:
@@ -37,10 +40,17 @@ services:
     environment:
       RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
     depends_on:
-          - rabbitmq
+      rabbitmq:
+          condition: service_healthy
 
   rabbitmq:
     image: rabbitmq:4-management
     ports:
       - "5672:5672"
       - "15672:15672"
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
