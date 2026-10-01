@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: regionalization-service
+  rabbitmq:
+    addresses: ${RabbitMq__ConnectionString:amqp://guest:guest@localhost:5672}
+
+# Queue Configuration (Used by our beans)
+deliveryflow:
+  rabbitmq:
+    exchange: delivery-flow-exchange
+    queues:
+      delivery-prepared: regionalization
+    routing-keys:
+      delivery-prepared: delivery.prepared
+      region-assigned: region.assigned
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics

@@ -12,7 +12,6 @@ services:
       rabbitmq:
           condition: service_healthy
 
-
   validation-service:
     build:
       context: ./ValidationService
@@ -39,6 +38,36 @@ services:
       dockerfile: Dockerfile
     environment:
       RABBIT_MQ_URL: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+          condition: service_healthy
+
+  regionalization-service:
+    build:
+      context: ./RegionalizationService
+      dockerfile: Dockerfile
+    environment:
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+          condition: service_healthy
+
+  routing-service:
+    build:
+      context: ./RoutingService
+      dockerfile: Dockerfile
+    environment:
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
+    depends_on:
+      rabbitmq:
+          condition: service_healthy
+
+  warehouse-service:
+    build:
+      context: ./WarehouseService
+      dockerfile: Dockerfile
+    environment:
+      RabbitMq__ConnectionString: amqp://guest:guest@rabbitmq:5672
     depends_on:
       rabbitmq:
           condition: service_healthy

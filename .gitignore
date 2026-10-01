@@ -427,3 +427,8 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.idea
+# Java target directories
+target/
+**/target/
+

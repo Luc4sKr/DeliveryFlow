@@ -1,0 +1,14 @@
+server:
+  port: 8081
+spring:
+  application:
+    name: routing-service
+  rabbitmq:
+    addresses: ${RabbitMq__ConnectionString:amqp://guest:guest@localhost:5672}
+deliveryflow:
+  rabbitmq:
+    exchange: delivery-flow-exchange
+    queues:
+      routing: routing-queue
+    routing-keys:
+      region-assigned: region.assigned
